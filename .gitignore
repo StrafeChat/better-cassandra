@@ -130,3 +130,7 @@ dist
 .pnp.*
 
 test
+.cassandraWorkbench.jsonc
+.cassandraWorkbench/history.json
+.cassandraWorkbench/editors/0.json
+.vscode/settings.json
