@@ -121,6 +121,29 @@ export class Client {
     }
   }
 
+  /**
+   * Alter the keyspace in the Cassandra database by modifying its replication strategy,
+   * keyspace name, and other configuration options.
+   *
+   * @param {string} name - The name of the keyspace to be altered.
+   * @param {KeyspaceReplication} replication - The replication strategy and configuration for the keyspace.
+   *
+   * @throws {Error} Throws an error if an unsupported replication strategy is provided.
+   *
+   * @example
+   * // Alter keyspace with SimpleStrategy replication
+   * await alterKeyspace('myKeyspace', { class: 'SimpleStrategy', factor: 3, durableWrites: true });
+   *
+   * // Alter keyspace with NetworkTopologyStrategy replication
+   * await alterKeyspace('myKeyspace', {
+   *   class: 'NetworkTopologyStrategy',
+   *   datacenters: [
+   *     { name: 'dc1', factor: 2 },
+   *     { name: 'dc2', factor: 1 },
+   *   ],
+   *   durableWrites: false
+   * });
+   */
   public async alterKeyspace(name: string, replication: KeyspaceReplication) {
     let query = `ALTER KEYSPACE ${name}\n`;
     switch (replication.class) {
@@ -154,6 +177,28 @@ export class Client {
     await this.cassandara.execute(query);
   }
 
+  /**
+   * Create a new keyspace in the Cassandra database with the specified name and replication strategy.
+   *
+   * @param {string} name - The name of the keyspace to be created.
+   * @param {KeyspaceReplication} replication - The replication strategy and configuration for the keyspace.
+   *
+   * @throws {Error} Throws an error if an unsupported replication strategy is provided.
+   *
+   * @example
+   * // Create keyspace with SimpleStrategy replication
+   * await createKeyspace('myKeyspace', { class: 'SimpleStrategy', factor: 3, durableWrites: true });
+   *
+   * // Create keyspace with NetworkTopologyStrategy replication
+   * await createKeyspace('myKeyspace', {
+   *   class: 'NetworkTopologyStrategy',
+   *   datacenters: [
+   *     { name: 'dc1', factor: 2 },
+   *     { name: 'dc2', factor: 1 },
+   *   ],
+   *   durableWrites: false
+   * });
+   */
   public async createKeyspace(name: string, replication: KeyspaceReplication) {
     let query = `CREATE KEYSPACE ${name}`;
 
@@ -184,6 +229,17 @@ export class Client {
     await this.cassandara.execute(query);
   }
 
+  /**
+   * Drop (delete) an existing keyspace in the Cassandra database.
+   *
+   * @param {string} name - The name of the keyspace to be dropped.
+   *
+   * @throws {Error} Throws an error if the keyspace does not exist or if there's an issue with the execution.
+   *
+   * @example
+   * // Drop an existing keyspace
+   * await dropKeyspace('myKeyspace');
+   */
   public async dropKeyspace(name: string) {
     await this.cassandara.execute(`DROP KEYSPACE ${name};`);
   }
