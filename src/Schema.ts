@@ -55,8 +55,8 @@ export type SchemaDefinition<T> = {
   [key in keyof Omit<T, keyof DefaultFields>]: SchemaOptionsField<T>;
 } & {
   id?: SchemaOptionsField<T> | null;
-  created_at?: SchemaOptionsField<T> & { type: "timestamp" } | null;
-  edited_at?: SchemaOptionsField<T> & { type: "timestamp" } | null;
+  created_at?: (SchemaOptionsField<T> & { type: "timestamp" }) | null;
+  edited_at?: (SchemaOptionsField<T> & { type: "timestamp" }) | null;
 };
 
 interface SchemaOptions<T> {
@@ -66,17 +66,29 @@ interface SchemaOptions<T> {
   };
 }
 
-export type UDTSchemaOptions<T> = {
+export type UDTSchemaDefinition<T> = {
   [key in keyof T]: { type: SchemaOptionsField<T>["type"] };
 };
+
+export type MVSchemaDefinition<T> = {
+  [key in keyof Partial<T>]: { type: SchemaOptionsField<T>["type"] };
+} & {
+  id?: SchemaOptionsField<T> | null;
+  created_at?: (SchemaOptionsField<T> & { type: "timestamp" }) | null;
+  edited_at?: (SchemaOptionsField<T> & { type: "timestamp" }) | null;
+};;
 
 export class Schema<T> {
   constructor(
     public readonly definition: SchemaDefinition<T>,
     public readonly options?: SchemaOptions<T>
   ) {}
-}
+};
 
 export class UDTSchema<T> {
-  constructor(public readonly options: UDTSchemaOptions<T>) {}
+  constructor(public readonly definition: UDTSchemaDefinition<T>) {};
+}
+
+export class MVSchema<T> {
+  constructor(public readonly definition: MVSchemaDefinition<T>) {};
 }

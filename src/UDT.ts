@@ -1,5 +1,5 @@
 import { Client } from "./Client";
-import { FieldTypeMap, FrozenType, SchemaOptionsField, UDTSchema, UDTSchemaOptions, UDTSchemaOptionsField } from "./Schema";
+import { FieldTypeMap, FrozenType, SchemaOptionsField, UDTSchema, UDTSchemaDefinition, UDTSchemaOptionsField } from "./Schema";
 
 /**
  * A class used to perform actions on user defined types in Cassandra.
@@ -84,7 +84,7 @@ export class UDT<T> {
      * You still need to provide the typesPath for Better Cassandra to find the user defined types.
      */
     public async load() {
-        const entries = Object.entries(this.schema.options) as [string, SchemaOptionsField<T>][];
+        const entries = Object.entries(this.schema.definition) as [string, SchemaOptionsField<T>][];
         const columns: string[] = [];
 
         // Add columns for each entry in the schema.options

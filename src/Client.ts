@@ -3,6 +3,7 @@ import fs from "fs";
 import path from "path";
 import { Model } from "./Model";
 import { UDT } from "./UDT";
+import { MaterialView, MaterialViewOptions } from "./MaterialView";
 
 interface Logger {
   success: (text: string) => void;
@@ -34,13 +35,14 @@ interface Options extends DseClientOptions {
   modelsPath?: string;
 
   /**
+   * Your path for loading your material views.
+   */
+  materialViewsPath?: string;
+
+  /**
    * Set your preferred logging function. (Wraps text in a function)
    */
   logging?: Logger;
-  /**
-   * Used for generating snowflake id's
-   */
-  epoch?: number;
 }
 
 /**
@@ -55,15 +57,17 @@ export class Client {
   /**
    * A map of all the user defined types.
    */
-  public readonly types: Map<string, UDT<any>> = new Map<string, UDT<any>>();
+  public readonly types = new Map<string, UDT<any>>();
 
   /**
    * A map of all loaded models.
    */
-  public readonly models: Map<string, Model<any>> = new Map<
-    string,
-    Model<any>
-  >();
+  public readonly models = new Map<string, Model<any>>();
+
+  /**
+   * A map of all loaded material views.
+   */
+  public readonly materialViews = new Map<string, MaterialView<any>>();
 
   public readonly logging!: Logger;
 
@@ -115,6 +119,24 @@ export class Client {
         if (model && typeof model.load === "function") {
           await (async () => {
             await model.load(this);
+          })();
+        }
+      }
+    }
+
+    if (this.options.materialViewsPath) {
+      const files = fs.readdirSync(this.options.materialViewsPath);
+      for (const file of files) {
+        const filePath = path.join(this.options.materialViewsPath, file);
+        let materialView: MaterialView<any> | undefined;
+        if (path.extname(file) == ".ts")
+          materialView = require(filePath).default;
+        else if (path.extname(file) == ".js") materialView = require(filePath);
+        else return;
+
+        if (materialView && typeof materialView.load == "function") {
+          await (async () => {
+            await materialView?.load(this);
           })();
         }
       }
