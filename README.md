@@ -1,2 +1,2 @@
 # better-cassandra
-A better way to work with cassandra! (Also supports scylladb)
+A better way to work with cassandra in nodejs! (Also supports scylladb)
