@@ -434,7 +434,7 @@ export class Model<T> {
 
     await this.client.cassandara.execute(`
     UPDATE ${this.client.cassandara.keyspace}.${this.name}
-    SET ${conditions[0].map((name) => `${name}=?`)}
+    SET ${conditions[0].map((name) => `${name}=?`).join(", ")}
     WHERE ${conditions[2].map((cond) => cond).join(" AND ")}
     IF EXISTS;
     `, [...conditions[1], ...conditions[3]], { prepare: $prepare });

@@ -74,7 +74,7 @@ export const BatchUpdate = <T>({ name, set, where, limit }: { name: string, set:
     return {
         query: `
         UPDATE {keyspace}.${name}
-        SET ${columns.map((col) => `${col} = ?`).join(" AND ")}
+        SET ${columns.map((col) => `${col} = ?`).join(", ")}
         WHERE ${conditions[0].map((cond) => cond).join(" AND ")}
         ${limitClause};
         `,
