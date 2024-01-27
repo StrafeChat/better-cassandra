@@ -47,7 +47,7 @@ export class UDT<T> {
 
         if (fieldType instanceof FrozenType) {
             const type = this.client.types.get(fieldType.udt);
-            if (!type) throw new Error(`Type "${this.name}" requires the "${fieldName}" user defined type which was not found!`);
+            if (!type) throw new Error(`Type "${this.name}" requires the "${fieldType.udt}" user defined type which was not found!`);
             await type.load();
             return `${fieldName} frozen<${fieldType.udt}>`
         } else if (typeMapping[fieldType]) {

@@ -3,7 +3,7 @@ import fs from "fs";
 import path from "path";
 import { Model } from "./Model";
 import { UDT } from "./UDT";
-import { MaterialView, MaterialViewOptions } from "./MaterialView";
+import { MaterialView } from "./MaterialView";
 
 interface Logger {
   success: (text: string) => void;
@@ -13,16 +13,21 @@ interface Logger {
 
 type KeyspaceReplication = (
   | {
-      class: "SimpleStrategy";
-      factor: number;
-    }
+    class: "SimpleStrategy";
+    factor: number;
+  }
   | {
-      class: "NetworkTopologyStrategy";
-      datacenters: { name: string; factor: number }[];
-    }
+    class: "NetworkTopologyStrategy";
+    datacenters: { name: string; factor: number }[];
+  }
 ) & {
   durableWrites?: boolean;
 };
+
+export interface BatchStatement {
+  query: string;
+  params: any[];
+}
 
 interface Options extends DseClientOptions {
   /**
@@ -183,8 +188,8 @@ export class Client {
                 WITH REPLICATION = {
                     'class': '${replication.class}',
                     ${replication.datacenters.map(
-                      (dc) => `'${dc.name}': ${dc.factor}`
-                    )}
+          (dc) => `'${dc.name}': ${dc.factor}`
+        )}
                 }`;
         break;
       default:
@@ -197,6 +202,12 @@ export class Client {
       ? `\n    AND DURABLE WRITES = ${replication.durableWrites};`
       : ";";
     await this.cassandara.execute(query);
+  }
+
+  public async batch(operations: BatchStatement[], { prepare }: { prepare?: boolean } = {}) {
+    await this.cassandara.batch(operations.map((operation) => {
+      return { ...operation, query: operation.query.replace("{keyspace}", this.cassandara.keyspace) };
+    }), { prepare });
   }
 
   /**

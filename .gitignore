@@ -134,3 +134,4 @@ test
 .cassandraWorkbench/history.json
 .cassandraWorkbench/editors/0.json
 .vscode/settings.json
+.cassandraWorkbench/editors/1.json
