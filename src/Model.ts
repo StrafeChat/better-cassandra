@@ -70,14 +70,15 @@ export class Model<T> {
         );
       await type.load();
       return `${fieldName} frozen<${fieldType.udt}>`;
-    } else if (typeMapping[fieldType]) {
-
-      if (fieldOptions.partitionKey) this.primaryKey[0].push(fieldName);
-      else if (fieldOptions.cluseringKey) this.primaryKey[1].push(fieldName);
-
-      return `${fieldName} ${typeMapping[fieldType]}`;
     } else {
-      throw new Error(`Unsupported field type: ${fieldType}`);
+      let startPos = fieldType.indexOf("<") + 1;
+      let endPos = fieldType.indexOf(">");
+
+      if (typeMapping[fieldType] || typeMapping[fieldType.substring(startPos, endPos) as keyof Partial<Record<keyof FieldTypeMap<T>, string>>]) {
+        if (fieldOptions.partitionKey) this.primaryKey[0].push(fieldName);
+        else if (fieldOptions.cluseringKey) this.primaryKey[1].push(fieldName);
+        return `${fieldName} ${typeMapping[fieldType] ||fieldType.split('<')[0] + '<' + typeMapping[fieldType.substring(startPos, endPos) as keyof Partial<Record<keyof FieldTypeMap<T>, string>>] + '>'}`;
+      } else throw new Error(`Unsupported field type: ${fieldType}`);
     }
   }
 
