@@ -63,10 +63,13 @@ export class Model<T> {
       | FrozenType;
 
     if (fieldType instanceof FrozenType) {
-      const type = this.client.types.get(fieldType.udt);
+      let startPos = fieldType.udt.indexOf("<") + 1;
+      let endPos = fieldType.udt.indexOf(">");
+
+      const type = this.client.types.get(fieldType.udt) || this.client.types.get(fieldType.udt.substring(startPos, endPos));
       if (!type)
         throw new Error(
-          `Model "${this.name}" requires the "${fieldName}" user defined type which was not found!`
+          `Model "${this.name}" requires the "${fieldType.udt}" user defined type which was not found!`
         );
       await type.load();
       return `${fieldName} frozen<${fieldType.udt}>`;
@@ -77,7 +80,7 @@ export class Model<T> {
       if (typeMapping[fieldType] || typeMapping[fieldType.substring(startPos, endPos) as keyof Partial<Record<keyof FieldTypeMap<T>, string>>]) {
         if (fieldOptions.partitionKey) this.primaryKey[0].push(fieldName);
         else if (fieldOptions.cluseringKey) this.primaryKey[1].push(fieldName);
-        return `${fieldName} ${typeMapping[fieldType] ||fieldType.split('<')[0] + '<' + typeMapping[fieldType.substring(startPos, endPos) as keyof Partial<Record<keyof FieldTypeMap<T>, string>>] + '>'}`;
+        return `${fieldName} ${typeMapping[fieldType] || fieldType.split('<')[0] + '<' + typeMapping[fieldType.substring(startPos, endPos) as keyof Partial<Record<keyof FieldTypeMap<T>, string>>] + '>'}`;
       } else throw new Error(`Unsupported field type: ${fieldType}`);
     }
   }
