@@ -1,7 +1,7 @@
 {
   "name": "better-cassandra",
   "description": "A better way to work with cassandra! (Also supports scylladb)",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "main": "lib/index",
   "scripts": {
     "build": "tsc --build",
