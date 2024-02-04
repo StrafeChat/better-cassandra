@@ -43,20 +43,10 @@ export interface UDTSchemaOptionsField<T> {
   type: SchemaOptionsField<T>["type"];
 }
 
-interface DefaultFields {
-  id: SchemaOptionsField<any>;
-  created_at: SchemaOptionsField<any>;
-  edited_at: SchemaOptionsField<any>;
-}
-
-export type Query<T> = Partial<keyof DefaultFields> | keyof T;
+export type Query<T> = keyof T;
 
 export type SchemaDefinition<T> = {
-  [key in keyof Omit<T, keyof DefaultFields>]: SchemaOptionsField<T>;
-} & {
-  id?: SchemaOptionsField<T> | null;
-  created_at?: (SchemaOptionsField<T> & { type: "timestamp" }) | null;
-  edited_at?: (SchemaOptionsField<T> & { type: "timestamp" }) | null;
+  [key in keyof T]: SchemaOptionsField<T>;
 };
 
 interface SchemaOptions<T> {
@@ -72,11 +62,7 @@ export type UDTSchemaDefinition<T> = {
 
 export type MVSchemaDefinition<T> = {
   [key in keyof Partial<T>]: { type: SchemaOptionsField<T>["type"] };
-} & {
-  id?: SchemaOptionsField<T> | null;
-  created_at?: (SchemaOptionsField<T> & { type: "timestamp" }) | null;
-  edited_at?: (SchemaOptionsField<T> & { type: "timestamp" }) | null;
-};;
+}
 
 export class Schema<T> {
   constructor(
