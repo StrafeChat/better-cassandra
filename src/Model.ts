@@ -186,8 +186,8 @@ export class Model<T> {
     const conditionHandlers: Record<string, (key: string, value: any) => void> = {
       equals: (k, v) => conditions[0].push(`${k}=?`) && conditions[1].push(v),
       notEquals: (k, v) => conditions[0].push(`${k}=?`) && conditions[1].push(v),
-      in: (k, v) => conditions[0].push(`${k} IN (${v.map(() => '?').join(", ")})`) && conditions[1].push(v),
-      notIn: (k, v) => conditions[0].push(`${k} IN (${v.map(() => '?').join(", ")})`) && conditions[1].push(v),
+      in: (k, v) => conditions[0].push(`${k} IN ?`) && conditions[1].push(v),
+      notIn: (k, v) => conditions[0].push(`${k} NOT IN ?`) && conditions[1].push(v),
       greaterThanOrEqual: (k, v) => conditions[0].push(`${k}>=?`) && conditions[1].push(v),
       lessThanOrEqual: (k, v) => conditions[0].push(`${k}<=?`) && conditions[1].push(v),
       contains: (k, v) => conditions[0].push(`${k} CONTAINS ?`) && conditions[1].push(v),
@@ -238,8 +238,8 @@ export class Model<T> {
     const conditionHandlers: Record<string, (key: string, value: any) => void> = {
       equals: (k, v) => conditions[0].push(`${k}=?`) && conditions[1].push(v),
       notEquals: (k, v) => conditions[0].push(`${k}=?`) && conditions[1].push(v),
-      in: (k, v) => conditions[0].push(`${k} IN (${v.map(() => '?').join(", ")})`) && conditions[1].push(v),
-      notIn: (k, v) => conditions[0].push(`${k} IN (${v.map(() => '?').join(", ")})`) && conditions[1].push(v),
+      in: (k, v) => conditions[0].push(`${k} IN ?`) && conditions[1].push(v),
+      notIn: (k, v) => conditions[0].push(`${k} NOT IN ?`) && conditions[1].push(v),
       greaterThanOrEqual: (k, v) => conditions[0].push(`${k}>=?`) && conditions[1].push(v),
       lessThanOrEqual: (k, v) => conditions[0].push(`${k}<=?`) && conditions[1].push(v),
       contains: (k, v) => conditions[0].push(`${k} CONTAINS ?`) && conditions[1].push(v),
@@ -300,8 +300,8 @@ export class Model<T> {
     const conditionHandlers: Record<string, (key: string, value: any) => void> = {
       equals: (k, v) => conditions[0].push(`${k}=?`) && conditions[1].push(v),
       notEquals: (k, v) => conditions[0].push(`${k}=?`) && conditions[1].push(v),
-      in: (k, v) => conditions[0].push(`${k} IN (${v.map(() => '?').join(", ")})`) && conditions[1].push(v),
-      notIn: (k, v) => conditions[0].push(`${k} IN (${v.map(() => '?').join(", ")})`) && conditions[1].push(v),
+      in: (k, v) => conditions[0].push(`${k} IN ?`) && conditions[1].push(v),
+      notIn: (k, v) => conditions[0].push(`${k} NOT IN ?`) && conditions[1].push(v),
       greaterThanOrEqual: (k, v) => conditions[0].push(`${k}>=?`) && conditions[1].push(v),
       lessThanOrEqual: (k, v) => conditions[0].push(`${k}<=?`) && conditions[1].push(v),
       contains: (k, v) => conditions[0].push(`${k} CONTAINS ?`) && conditions[1].push(v),
@@ -357,8 +357,8 @@ export class Model<T> {
     const conditionHandlers: Record<string, (key: string, value: any) => void> = {
       equals: (k, v) => conditions[0].push(`${k}=?`) && conditions[1].push(v),
       notEquals: (k, v) => conditions[0].push(`${k}=?`) && conditions[1].push(v),
-      in: (k, v) => conditions[0].push(`${k} IN (${v.map(() => '?').join(", ")})`) && conditions[1].push(v),
-      notIn: (k, v) => conditions[0].push(`${k} IN (${v.map(() => '?').join(", ")})`) && conditions[1].push(v),
+      in: (k, v) => conditions[0].push(`${k} IN ?`) && conditions[1].push(v),
+      notIn: (k, v) => conditions[0].push(`${k} NOT IN ?`) && conditions[1].push(v),
       greaterThanOrEqual: (k, v) => conditions[0].push(`${k}>=?`) && conditions[1].push(v),
       lessThanOrEqual: (k, v) => conditions[0].push(`${k}<=?`) && conditions[1].push(v),
       contains: (k, v) => conditions[0].push(`${k} CONTAINS ?`) && conditions[1].push(v),
@@ -422,8 +422,8 @@ export class Model<T> {
     const conditionHandlers: Record<string, (key: string, value: any) => void> = {
       equals: (k, v) => conditions[2].push(`${k}=?`) && conditions[3].push(v),
       notEquals: (k, v) => conditions[2].push(`${k}=?`) && conditions[3].push(v),
-      in: (k, v) => conditions[2].push(`${k} IN (${v.map(() => '?').join(", ")})`) && conditions[3].push(v),
-      notIn: (k, v) => conditions[2].push(`${k} IN (${v.map(() => '?').join(", ")})`) && conditions[3].push(v),
+      in: (k, v) => conditions[2].push(`${k} IN ?`) && conditions[3].push(v),
+      notIn: (k, v) => conditions[2].push(`${k} NOT IN ?`) && conditions[3].push(v),
       greaterThanOrEqual: (k, v) => conditions[2].push(`${k}>=?`) && conditions[3].push(v),
       lessThanOrEqual: (k, v) => conditions[2].push(`${k}<=?`) && conditions[3].push(v),
       contains: (k, v) => conditions[2].push(`${k} CONTAINS ?`) && conditions[3].push(v),
@@ -485,10 +485,7 @@ export class Model<T> {
 
     // Add columns for each entry in the schema.options
     for (const [key, value] of entries) {
-      // Skip "edited_at" as it will be added separately
-      if (key !== "edited_at") {
-        columns.push(await this.getColumnDefinition(key, value));
-      }
+      columns.push(await this.getColumnDefinition(key, value));
     }
 
     // if (
