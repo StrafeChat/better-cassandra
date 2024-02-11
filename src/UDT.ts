@@ -50,15 +50,22 @@ export class UDT<T> {
             let endPos = fieldType.udt.indexOf(">");
 
             const type = this.client.types.get(fieldType.udt) || this.client.types.get(fieldType.udt.substring(startPos, endPos));
-            
+
             if (!type) throw new Error(`Type "${this.name}" requires the "${fieldType.udt}" user defined type which was not found!`);
-            
+
             await type.load();
             return `${fieldName} frozen<${fieldType.udt}>`
-        } else if (typeMapping[fieldType]) {
-            return `${fieldName} ${typeMapping[fieldType]}`;
+            // } else if (typeMapping[fieldType]) {
+            //     return `${fieldName} ${typeMapping[fieldType]}`;
+            // } else {
+            //     throw new Error(`Unsupported field type: ${fieldType}`);
+            // }
         } else {
-            throw new Error(`Unsupported field type: ${fieldType}`);
+            let startPos = fieldType.indexOf("<") + 1;
+            let endPos = fieldType.indexOf(">");
+
+            if (typeMapping[fieldType] || typeMapping[fieldType.substring(startPos, endPos) as keyof Partial<Record<keyof FieldTypeMap<T>, string>>]) return `${fieldName} ${typeMapping[fieldType] || fieldType.split('<')[0] + '<' + typeMapping[fieldType.substring(startPos, endPos) as keyof Partial<Record<keyof FieldTypeMap<T>, string>>] + '>'}`;
+            else throw new Error(`Unsupported field type: ${fieldType}`);
         }
     }
 
