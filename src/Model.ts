@@ -58,9 +58,7 @@ export class Model<T> {
       varint: "varint",
     };
 
-    const fieldType = fieldOptions.type as
-      | keyof Partial<Record<keyof FieldTypeMap<T>, string>>
-      | FrozenType;
+    const fieldType = fieldOptions.type as keyof Partial<Record<keyof FieldTypeMap<T>, string>> | FrozenType;
 
     if (fieldType instanceof FrozenType) {
       let startPos = fieldType.udt.indexOf("<") + 1;
@@ -487,35 +485,6 @@ export class Model<T> {
     for (const [key, value] of entries) {
       columns.push(await this.getColumnDefinition(key, value));
     }
-
-    // if (
-    //   this.schema.definition.created_at == undefined ||
-    //   this.schema.definition.created_at == null
-    // )
-    //   columns.push(
-    //     await this.getColumnDefinition("created_at", {
-    //       cluseringKey: true,
-    //       type: "timestamp",
-    //     })
-    //   );
-
-    // columns.push(
-    //   await this.getColumnDefinition("edited_at", {
-    //     partitionKey: false,
-    //     type: "timestamp",
-    //   })
-    // );
-
-    // if (
-    //   this.schema.definition.id == undefined ||
-    //   this.schema.definition.id == null
-    // )
-    //   columns.push(
-    //     await this.getColumnDefinition("id", {
-    //       partitionKey: true,
-    //       type: "uuid",
-    //     })
-    //   );
 
     await client.cassandara.execute(
       `CREATE TABLE IF NOT EXISTS ${client.cassandara.keyspace}.${this.name} (

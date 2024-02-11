@@ -46,8 +46,13 @@ export class UDT<T> {
         const fieldType = fieldOptions.type as keyof Partial<Record<keyof FieldTypeMap<T>, string>> | FrozenType;
 
         if (fieldType instanceof FrozenType) {
-            const type = this.client.types.get(fieldType.udt);
+            let startPos = fieldType.udt.indexOf("<") + 1;
+            let endPos = fieldType.udt.indexOf(">");
+
+            const type = this.client.types.get(fieldType.udt) || this.client.types.get(fieldType.udt.substring(startPos, endPos));
+            
             if (!type) throw new Error(`Type "${this.name}" requires the "${fieldType.udt}" user defined type which was not found!`);
+            
             await type.load();
             return `${fieldName} frozen<${fieldType.udt}>`
         } else if (typeMapping[fieldType]) {
